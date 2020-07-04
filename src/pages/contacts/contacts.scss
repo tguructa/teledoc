@@ -1,0 +1,15 @@
+page-contacts {
+  ion-spinner {
+    * {
+      stroke: #e9c46a;
+      display: block;
+      margin: auto;
+    }
+
+    &.spinner-circles circle,
+    &.spinner-bubbles circle,
+    &.spinner-dots circle {
+      fill: #e9c46a;
+    }
+  }
+}

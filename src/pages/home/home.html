@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-navbar color="primary">
+      <ion-title>
+          face2face
+      </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding >
+
+ <ion-list >
+  <ion-item style="border-color: #272b30">
+    
+    <ion-label floating>Register Your Phone No: </ion-label>
+    <ion-input type="number" [(ngModel)]="RegistrationID" clearInput></ion-input>
+
+  </ion-item>
+  <ion-item no-lines>
+    <div text-center>
+      <button ion-button color="secondary" round block small 
+        (click)='SaveRegistrationID(RegistrationID)'>Save</button>
+      </div>
+  </ion-item>
+  </ion-list> 
+</ion-content>

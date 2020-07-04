@@ -1,0 +1,7 @@
+{
+  "name": "face2face",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "ionic-angular"
+}

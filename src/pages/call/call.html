@@ -1,0 +1,60 @@
+<!--
+  Generated template for the CallPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar color="primary">
+      <ion-title>
+          face2face - {{myCallId}}
+      </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+
+ <ion-list>
+      <ion-item>
+          <ion-label floating>Caller Phone No</ion-label>
+          <ion-input type="text" [(ngModel)]="calleeName" clearInput></ion-input>
+          <button  ion-button  color="secondary" round small (click)='openModal()' item-end>Contacts</button>
+      </ion-item>
+  </ion-list> 
+
+  <ion-grid>
+      <ion-row>
+          <ion-col>
+              <button *ngIf="showCall"  ion-button color="light-blue" round block small (click)='MakeCall(calleeId)'>Call</button>
+          </ion-col>
+          <ion-col>
+              <button *ngIf="showHangup" ion-button round block small color="light-red" (click)='HangUp()'>Hangup</button>
+          </ion-col>
+      </ion-row>
+      <ion-row>
+          <ion-col>
+              <button *ngIf="showAnswer" ion-button round block small color="light-green" (click)='AnswerCall(incomingCallId)'>Answer</button>
+          </ion-col>
+          <ion-col>
+              <button *ngIf="showReject" ion-button round block small color="light-red">Reject</button>
+          </ion-col>
+      </ion-row>
+<!--       <ion-row>
+          <ion-col>
+              <p *ngIf="showStatus" [innerHtml]="status"></p>
+          </ion-col>
+      </ion-row> -->
+      <ion-row *ngIf="showRemoteVideo">
+          <ion-col>
+              <p>Caller Video</p>
+              <div id="remote" style="width:100%;"></div>
+          </ion-col>
+      </ion-row>
+      <ion-row *ngIf="showMyVideo">
+          <ion-col>
+              <p>My Video</p>
+              <div id="mini"></div>
+          </ion-col>
+      </ion-row>
+  </ion-grid>
+</ion-content>
