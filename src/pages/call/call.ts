@@ -12,7 +12,7 @@ import { Base64 } from 'base64-string';
  * See https://ionicframework.com/docs/components/#navigation for more info on
  * Ionic pages and navigation.
  */
-declare var apiRTC: any;
+declare var easyrtc: any;
 
 @IonicPage()
 @Component({
@@ -28,7 +28,9 @@ export class CallPage {
   showRemoteVideo: boolean = true;
   showMyVideo: boolean = true;
 
-  apiRTCKey="b1c7afd3d2f5a7c7ffc1dda28e0d352a";
+  localStream;
+  currentCamera: boolean = true; // front or rear
+  
   session;
   webRTCClient;
   incomingCallId = 0;
@@ -96,37 +98,51 @@ export class CallPage {
   }
 
   InitializeApiRTC(papiCCId) {
-    apiRTC.init({
-      apiKey: this.apiRTCKey,
-      apiCCId: papiCCId,
-      onReady: (e) => {
-        this.sessionReadyHandler(e);
+    easyrtc.setSocketUrl("https://***.***.***.***:8443");
+    easyrtc.setVideoDims(256, 144);
+    easyrtc.enableDebug(false);
+    easyrtc.enableDataChannels(true);
+    //easyrtc.setRoomOccupantListener(convertListToButtons);
+    this.InitializeControls();
+    //this.AddEventListenersEasyRTC();
+    easyrtc.enableAudio(true);
+    easyrtc.enableVideo(true);
+
+    easyrtc.connect("easyrtc.audioVideo", (easyrtcid) => {
+      this.myCallId = easyrtcid;
+
+      try {
+        //alert(easyrtc.idToName(easyrtcid));
       }
-    });
+      catch (err) {
+        alert("try, catch (): " + err)
+      }
+      easyrtc.initMediaSource(
+        (mediastream) => {
+          this.localStream = mediastream;
+        },
+        (errorCode, errorText) => {
+          easyrtc.showError(errorCode, errorText);
+        });
+    }, this.loginFailure);
   }
 
-  sessionReadyHandler(e) {
-    this.myCallId = apiRTC.session.apiCCId;
+  loginSuccess(easyrtcid) {
+    this.myCallId =easyrtc.idToName( easyrtc.cleanId(easyrtcid));
     this.InitializeControls();
     this.AddEventListeners();
     this.InitializeWebRTCClient();
+    
   }
 
-  InitializeWebRTCClient() {
-    this.webRTCClient = apiRTC.session.createWebRTCClient({
-      status: "status" //Optionnal
-    });
-    /*    this.webRTCClient.setAllowMultipleCalls(true);
-        this.webRTCClient.setVideoBandwidth(300);
-        this.webRTCClient.setUserAcceptOnIncomingCall(true);*/
+  loginFailure(errorCode, message) {
+    //easyrtc.showError(errorCode, message);
+    //alert("loginFailure: " + message)
   }
 
-  TestControls() {
-    this.showCall = true;
-    this.showAnswer = true;
-    this.showHangup = true;
-    this.showReject = true;
-  }
+
+
+
 
   InitializeControls() {
     this.showCall = true;
@@ -150,6 +166,13 @@ export class CallPage {
     this.showHangup = false;
   }
 
+  InitializeControlsForPerformCall() {
+    this.showCall = false;
+    this.showAnswer = false;
+    this.showReject = false;
+    this.showHangup = true;
+  }
+
   UpdateControlsOnAnswer() {
     this.showAnswer = false;
     this.showReject = false;
@@ -169,7 +192,7 @@ export class CallPage {
     this.webRTCClient.removeElementFromDiv('remote', 'remoteElt-' + callId);
   }
 
-  AddStreamInDiv(stream, callType, divId, mediaEltId, style, muted) {
+/*   AddStreamInDiv(stream, callType, divId, mediaEltId, style, muted) {
     let mediaElt = null;
     let divElement = null;
     if (callType === 'audio') {
@@ -185,76 +208,106 @@ export class CallPage {
     divElement = document.getElementById(divId);
     divElement.appendChild(mediaElt);
     this.webRTCClient.attachMediaStream(mediaElt, stream);
-  }
+  } */
 
   AddEventListeners() {
-    apiRTC.addEventListener("userMediaSuccess", (e) => {
-      this.showStatus = true;
-      this.showMyVideo = true;
-      this.webRTCClient.addStreamInDiv(
-        e.detail.stream,
-        e.detail.callType,
-        "mini",
-        'miniElt-' + e.detail.callId, {
-          width: "128px",
-          height: "96px"
-        }, true);
-
-    });
-
-    apiRTC.addEventListener("userMediaError", (e) => {
-      this.InitializeControlsForHangup();
-      this.CallAlert("An error has occurred: " + e);
-     // this.status = this.status + "<br/> The following error has occurred <br/> " + e;
-    });
-
-    apiRTC.addEventListener("incomingCall", (e) => {
+    easyrtc.setAcceptChecker((easyrtcid, callback) => {
       this.InitializeControlsForIncomingCall();
-      this.incomingCallId = e.detail.callId;
-    });
+      this.incomingCallId = easyrtc.idToName(easyrtcid);
+      //alert("A call from: " + this.incomingCallId);
 
-    apiRTC.addEventListener("hangup", (e) => {
-      if (e.detail.lastEstablishedCall === true) {
-        this.InitializeControlsForHangup();
+      //document.getElementById("acceptCallBox").style.display = "block";
+      if (easyrtc.getConnectionCount() > 0) {
+        //alert("Drop current call and accept new from " + easyrtc.idToName(easyrtcid) + " ?");
       }
-     // this.status = this.status + "<br/> The call has been hunged up due to the following reasons <br/> " + e.detail.reason;
-      this.RemoveMediaElements(e.detail.callId);
+      else {
+        //alert("Accept incoming call from " + easyrtc.idToName(easyrtcid) + " ?");
+      }
+      var acceptTheCall = function (wasAccepted) {
+        //document.getElementById("acceptCallBox").style.display = "none";
+        if (wasAccepted && easyrtc.getConnectionCount() > 0) {
+          easyrtc.hangupAll();
+        }
+        callback(wasAccepted);
+      };
+
+      document.getElementById("btnShowAnswer").onclick = () => {
+        acceptTheCall(true);
+        this.Ringtone("STOP");
+        this.UpdateControlsOnAnswer();
+      };
+      document.getElementById("btnShowReject").onclick = () => {
+        acceptTheCall(false);
+        this.UpdateControlsOnReject();
+        this.Ringtone("STOP");
+      };
     });
 
-    apiRTC.addEventListener("remoteStreamAdded", (e) => {
-      this.webRTCClient.addStreamInDiv(e.detail.stream, e.detail.callType, "remote", 'remoteElt-' + e.detail.callId, {
-        width: "300px",
-        height: "225px"
-      }, false);
+    easyrtc.setCallCancelled((easyrtcid, explicitlyCancelled) => {
+      if (explicitlyCancelled) {
+        alert(easyrtc.idToName(easyrtcid) + " stopped trying to reach you");
+        this.InitializeControls();
+        this.Ringtone("STOP");
+      }
+      else {
+        alert("Implicitly called " + easyrtc.idToName(easyrtcid));
+      }
     });
 
-    apiRTC.addEventListener("webRTCClientCreated", (e) => {
-      console.log("webRTC Client Created");
-      this.webRTCClient.setAllowMultipleCalls(true);
-      this.webRTCClient.setVideoBandwidth(300);
-      this.webRTCClient.setUserAcceptOnIncomingCall(true);
+    easyrtc.setStreamAcceptor((easyrtcid, stream) => {
+      var video = document.getElementById("callerVideo");
+      easyrtc.setVideoObjectSrc(video, stream);
+      console.log("saw video from " + easyrtcid);
+
+      var selfVideo = document.getElementById("selfVideo");
+      easyrtc.setVideoObjectSrc(selfVideo, this.localStream);
+
+      this.Ringtone("STOP");
+      this.UpdateControlsOnAnswer();
+    });
+
+    easyrtc.setOnStreamClosed((easyrtcid) => {
+      easyrtc.setVideoObjectSrc(document.getElementById("callerVideo"), "");
+      easyrtc.setVideoObjectSrc(document.getElementById("selfVideo"), "");
+      this.InitializeControlsForHangup();
     });
   }
 
-  MakeCall(calleeId) {
-    if(calleeId==null){
-      this.CallAlert("Please select or type a Contact!") 
-    }
-    else{
-    var callId = this.webRTCClient.call(calleeId);
-    if (callId != null) {
-      this.incomingCallId = callId;
-      this.showHangup = true;
-    }
-  }
+  MakeCall(otherEasyrtcid) {
+    easyrtc.hangupAll();
+
+    var successCB = () => {
+      if (this.localStream) {
+        var selfVideo = document.getElementById("selfVideo");
+        easyrtc.setVideoObjectSrc(selfVideo, this.localStream);
+      }
+      //enable("hangupButton");
+    };
+    var failureCB = function () { };
+    var acceptedCB = (accepted, easyrtcid) => {
+      if (!accepted) {
+        //easyrtc.showError("CALL-REJECTEd", "Sorry, your call to " + easyrtc.idToName(easyrtcid) + " was rejected");
+        alert("CALL-REJECTEd: Sorry, your call to " + easyrtc.idToName(easyrtcid) + " was rejected");
+        this.InitializeControls();
+        //enable("otherClients");
+      } else if (this.localStream) {
+        var selfVideo = document.getElementById("selfVideo");
+        easyrtc.setVideoObjectSrc(selfVideo, this.localStream);
+      }
+    };
+    this.InitializeControlsForPerformCall();
+    this.incomingCallId = easyrtc.idToName(otherEasyrtcid);
+    easyrtc.call(otherEasyrtcid, successCB, failureCB, acceptedCB);
+
   }
 
   HangUp() {
-    this.webRTCClient.hangUp(this.incomingCallId);
+    easyrtc.hangupAll();
+    this.InitializeControlsForHangup();
     this.Ringtone("STOP");
   }
 
-  AnswerCall(incomingCallId) {
+  /* AnswerCall(incomingCallId) {
     this.webRTCClient.acceptCall(incomingCallId);
     this.Ringtone("STOP");
     this.UpdateControlsOnAnswer();
@@ -265,7 +318,7 @@ export class CallPage {
     this.Ringtone("STOP");
     this.UpdateControlsOnReject();
     this.RemoveMediaElements(incomingCallId);
-  }
+  } */
 
   Ringtone(state) {
     if (state == "LOAD") {
@@ -284,4 +337,20 @@ export class CallPage {
       this.nativeAudio.stop('uniqueI1').then(() => {}, () => {});
     }
   }
+
+  SwitchCamera() {
+    easyrtc.getVideoSourceList((list) => {
+      var i;
+      //alert(JSON.stringify(this.localStream) + ', ' + JSON.stringify(list[i]))
+      if (this.currentCamera) {
+        easyrtc.setVideoSource(list[0].deviceid);
+        this.currentCamera = false;
+      }
+      else {
+        easyrtc.setVideoSource(list[1].deviceid);
+        this.currentCamera = true;
+      }
+    });
+  }
+  
 }
