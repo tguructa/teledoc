@@ -34,16 +34,12 @@ export class ContactsPage {
     private contactProvider: ContactsProvider
   ) {
    
-    this.storage.get('Contacts').then((val)=>{
-      this.contactList=val;
-      console.log(val);
-
-    })
-  }
+     }
 
   ionViewDidLoad() {
-    this.getContacts();
-    console.log('ionViewDidLoad ContactsPage');
+  //  this.getContacts();
+  this.contacts=this.params.get('contacts');
+    console.log(this.contacts);
   }
   radioSelect(value) {
     console.log("radioSelect",value);
@@ -55,11 +51,4 @@ export class ContactsPage {
     this.viewCtrl.dismiss( this.contact);
   }
 
-  getContacts(): void {
-    this.contactProvider.getContacts()
-    .subscribe(contacts => {
-      this.contacts = contacts
-      this.show = false;  
-    });
-  }
 }

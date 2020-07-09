@@ -22,8 +22,8 @@
   <ion-spinner *ngIf="show"></ion-spinner>  
   <ion-list radio-group allow-empty-selection="true">
     <ion-item *ngFor="let contact of contacts">
-        <ion-label>{{ contact.cname }}</ion-label>
-        <ion-radio  value="{{contact.cnumber}}" (ionSelect)="radioSelect(contact)"></ion-radio>
+        <ion-label>{{ contact.name }}</ion-label>
+        <ion-radio  value="{{contact.number}}" (ionSelect)="radioSelect(contact)"></ion-radio>
     </ion-item>
  </ion-list>
 

@@ -17,7 +17,7 @@
  <ion-list>
       <ion-item>
           <ion-label floating>Caller Phone No</ion-label>
-          <ion-input type="text" [(ngModel)]="calleeName" clearInput></ion-input>
+          <ion-input type="text" [(ngModel)]="calleeName" readonly></ion-input>
           <button  ion-button  color="secondary" round small (click)='openModal()' item-end>Contacts</button>
       </ion-item>
   </ion-list> 
@@ -31,29 +31,20 @@
               <button *ngIf="showHangup" ion-button round block small color="light-red" (click)='HangUp()'>Hangup</button>
           </ion-col>
       </ion-row>
-      <ion-row>
-          <ion-col>
-              <button *ngIf="showAnswer" ion-button round block small color="light-green" (click)='AnswerCall(incomingCallId)'>Answer</button>
-          </ion-col>
-          <ion-col>
-              <button *ngIf="showReject" ion-button round block small color="light-red">Reject</button>
-          </ion-col>
-      </ion-row>
-<!--       <ion-row>
-          <ion-col>
-              <p *ngIf="showStatus" [innerHtml]="status"></p>
-          </ion-col>
-      </ion-row> -->
       <ion-row *ngIf="showRemoteVideo">
           <ion-col>
               <p>Caller Video</p>
-              <div id="remote" style="width:100%;"></div>
+              <div id="remote" style="width:100%;">
+                <video autoplay="autoplay" id="callerVideo"></video>
+              </div>
           </ion-col>
       </ion-row>
       <ion-row *ngIf="showMyVideo">
           <ion-col>
               <p>My Video</p>
-              <div id="mini"></div>
+              <div id="mini">
+                <video autoplay="autoplay" id="selfVideo" (click)='SwitchCamera()'></video>
+              </div>
           </ion-col>
       </ion-row>
   </ion-grid>
