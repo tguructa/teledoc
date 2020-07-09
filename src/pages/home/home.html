@@ -7,13 +7,16 @@
 </ion-header>
 
 <ion-content padding >
-
  <ion-list >
+  <ion-item no-lines>
+    <ion-label>
+      <small ion-text color="secondary" text-wrap>Name should only contain Alphabets and Numbers. 
+        Special Characters NOT allowed.</small>
+  </ion-label>
+</ion-item>
   <ion-item style="border-color: #272b30">
-    
-    <ion-label floating>Register Your Phone No: </ion-label>
-    <ion-input type="number" [(ngModel)]="RegistrationID" clearInput></ion-input>
-
+     <ion-label floating>Register Your Name</ion-label>
+    <ion-input type="text" [(ngModel)]="RegistrationID" clearInput></ion-input>
   </ion-item>
   <ion-item no-lines>
     <div text-center>

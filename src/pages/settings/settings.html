@@ -12,10 +12,10 @@
 
 <ion-content>
   <ion-item-group  >
-    <ion-item-divider color="primary" no-lines > Change Your Phone No</ion-item-divider>
+    <ion-item-divider color="primary" no-lines > Change Your Name</ion-item-divider>
     <ion-item >
-      <ion-label floating>Phone No</ion-label>
-      <ion-input type="number" [(ngModel)]="RegistrationID" value={{RegistrationID}} clearInput></ion-input>
+      <ion-label floating>Name</ion-label>
+      <ion-input type="text" [(ngModel)]="RegistrationID" value={{RegistrationID}} clearInput></ion-input>
 
     </ion-item>
     <ion-item>
@@ -42,21 +42,9 @@
   </ion-item-group> -->
 
   <ion-item-group>
-    <ion-item-divider color="primary" no-lines >apiRTC Configuration</ion-item-divider>
-    <ion-item>
-      <ion-label floating>API Key</ion-label>
-      <ion-input type="text" [(ngModel)]="apiRTCKey"></ion-input>
-    </ion-item>
-    <ion-item>
-      <div text-center>
-        <button ion-button color="secondary" round small (click)='SaveapiRTCKey(apiRTCKey)'>Save</button></div>
-    </ion-item>
-  </ion-item-group>
-
-  <ion-item-group>
     <ion-item-divider color="primary" no-lines>About</ion-item-divider>
     <ion-item>
-      face2face v1.3
+      teledoc v1.1
     </ion-item>
 
   </ion-item-group>

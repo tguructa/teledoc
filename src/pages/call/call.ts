@@ -29,7 +29,7 @@ export class CallPage {
   showMyVideo: boolean = true;
   localStream;
   currentCamera: boolean = true; // front or rear
-  
+
   session;
   webRTCClient;
   incomingCallId = 0;
@@ -40,10 +40,10 @@ export class CallPage {
   RegistrationID = "";
   isRegistered: boolean = false;
   enc = new Base64();
-  AnswerCallAlert ;
+  AnswerCallAlert;
   occupants: any;
-  contacts:  Contact[]=[];
-  contact: Contact = {name:"",phone:""};
+  contacts: Contact[] = [];
+  contact: Contact = { name: "", phone: "" };
 
   constructor(
     public navCtrl: NavController,
@@ -55,11 +55,11 @@ export class CallPage {
     private alertCtrl: AlertController
 
   ) {
-   
+
   }
 
   ionViewDidLoad() {
-   // this.TestControls();
+    // this.TestControls();
     this.platform.ready().then(() => {
       this.Ringtone("LOAD");
       this.RegisterUser();
@@ -76,24 +76,19 @@ export class CallPage {
   }
 
   async openModal() {
-    this.contacts=[]; 
-       this.occupants=easyrtc.getRoomOccupantsAsArray("default");
-
-       for(let key of this.occupants) {
-       // console.log(key);
-         //let contact= new Contact();
-        this.contact.name=easyrtc.idToName(key);
-        this.contact.phone=key;
-        
-        this.contacts.push(this.contact);
-      }
-      console.log(this.contacts);
-     const contactModel = await this.modalController.create('ContactsPage',{ contacts: this.contacts});
+    this.contacts = [];
+    this.occupants = easyrtc.getRoomOccupantsAsArray("default");
+    for (let key of this.occupants) {
+      this.contact.name = easyrtc.idToName(key);
+      this.contact.phone = key;
+      this.contacts.push(this.contact);
+    }
+    const contactModel = await this.modalController.create('ContactsPage', { contacts: this.contacts });
     contactModel.onDidDismiss(data => {
-      console.log(data);
-    this.calleeName= data.name
-    this.calleeId =data.phone;
-    console.log(this.calleeId);
+      if (data) {
+        this.calleeName = data.name
+        this.calleeId = data.phone;
+      }
     });
     return await contactModel.present();
   }
@@ -120,20 +115,14 @@ export class CallPage {
     easyrtc.enableDebug(false);
     easyrtc.enableDataChannels(true);
     easyrtc.setUseFreshIceEachPeerConnection(true);
-   // easyrtc.setRoomOccupantListener(this.LoadOccupants);
+    // easyrtc.setRoomOccupantListener(this.LoadOccupants);
     this.InitializeControls();
     easyrtc.enableAudio(true);
     easyrtc.enableVideo(true);
-   this. AddEventListeners();
+    this.AddEventListeners();
     easyrtc.connect("easyrtc.audioVideo", (easyrtcid) => {
-      this.myCallId = easyrtcid;
+      this.myCallId = easyrtc.idToName(easyrtc.cleanId(easyrtcid));;
 
-      try {
-        //alert(easyrtc.idToName(easyrtcid));
-      }
-      catch (err) {
-        alert("try, catch (): " + err)
-      }
       easyrtc.initMediaSource(
         (mediastream) => {
           this.localStream = mediastream;
@@ -145,21 +134,14 @@ export class CallPage {
   }
 
   loginSuccess(easyrtcid) {
-    this.myCallId =easyrtc.idToName( easyrtc.cleanId(easyrtcid));
+    this.myCallId = easyrtc.idToName(easyrtc.cleanId(easyrtcid));
     this.InitializeControls();
-  //  this.AddEventListeners();
-   
-    
   }
 
   loginFailure(errorCode, message) {
     //easyrtc.showError(errorCode, message);
     //alert("loginFailure: " + message)
   }
-
-
-
-
 
   InitializeControls() {
     this.showCall = true;
@@ -204,47 +186,23 @@ export class CallPage {
     this.showCall = true;
   }
 
-  RemoveMediaElements(callId) {
-    this.webRTCClient.removeElementFromDiv('mini', 'miniElt-' + callId);
-    this.webRTCClient.removeElementFromDiv('remote', 'remoteElt-' + callId);
-  }
-
-/*   AddStreamInDiv(stream, callType, divId, mediaEltId, style, muted) {
-    let mediaElt = null;
-    let divElement = null;
-    if (callType === 'audio') {
-      mediaElt = document.createElement("audio");
-    } else {
-      mediaElt = document.createElement("video");
-    }
-    mediaElt.id = mediaEltId;
-    mediaElt.autoplay = true;
-    mediaElt.muted = muted;
-    mediaElt.style.width = style.width;
-    mediaElt.style.height = style.height;
-    divElement = document.getElementById(divId);
-    divElement.appendChild(mediaElt);
-    this.webRTCClient.attachMediaStream(mediaElt, stream);
-  } */
-
   AddEventListeners() {
     easyrtc.setAcceptChecker((easyrtcid, callback) => {
       console.log("answer call");
       this.InitializeControlsForIncomingCall();
-  
-        this.AnswerCallAlert = this.alertCtrl.create({
+
+      this.AnswerCallAlert = this.alertCtrl.create({
         title: 'Call',
-        subTitle: 'Incoming call from' + easyrtc.idToName(easyrtcid) ,
+        subTitle: 'Incoming call from' + easyrtc.idToName(easyrtcid),
         buttons: [
           {
             text: 'Reject',
             handler: () => {
               if (easyrtc.getConnectionCount() > 0) {
                 easyrtc.hangupAll();
-                this.Ringtone("STOP");
+               }
               this.UpdateControlsOnReject();
-              }
-              
+              this.Ringtone("STOP");
               callback(false);
             }
           },
@@ -264,7 +222,8 @@ export class CallPage {
     easyrtc.setStreamAcceptor((easyrtcid, stream) => {
       var video = document.getElementById("callerVideo");
       easyrtc.setVideoObjectSrc(video, stream);
-      console.log("saw video from " + easyrtcid);
+       
+
       var selfVideo = document.getElementById("selfVideo");
       easyrtc.setVideoObjectSrc(selfVideo, this.localStream);
       this.Ringtone("STOP");
@@ -278,8 +237,8 @@ export class CallPage {
         this.AnswerCallAlert.dismiss();
       }
     });
-   
-    easyrtc.setOnStreamClosed( (easyrtcid) => {
+
+    easyrtc.setOnStreamClosed((easyrtcid) => {
       easyrtc.setVideoObjectSrc(document.getElementById("callerVideo"), "");
       easyrtc.setVideoObjectSrc(document.getElementById("selfVideo"), "");
       this.InitializeControlsForHangup();
@@ -288,7 +247,6 @@ export class CallPage {
 
   MakeCall(otherEasyrtcid) {
     easyrtc.hangupAll();
-
     var successCB = () => {
       if (this.localStream) {
         var selfVideo = document.getElementById("selfVideo");
@@ -300,15 +258,12 @@ export class CallPage {
       if (!accepted) {
         alert("CALL-REJECTEd: Sorry, your call to " + easyrtc.idToName(easyrtcid) + " was rejected");
         this.InitializeControls();
-        //enable("otherClients");
-      } 
+      }
     };
     this.InitializeControlsForPerformCall();
     this.incomingCallId = easyrtc.idToName(otherEasyrtcid);
     easyrtc.call(otherEasyrtcid, successCB, failureCB, acceptedCB);
   }
-
-  
 
   HangUp() {
     easyrtc.hangupAll();
@@ -316,16 +271,16 @@ export class CallPage {
     this.Ringtone("STOP");
   }
 
-  LoadOccupants (roomName, occupants, isPrimary) {
-    for(var easyrtcid in occupants) {
-      let contact :Contact;
+  LoadOccupants(roomName, occupants, isPrimary) {
+    for (var easyrtcid in occupants) {
+      let contact: Contact;
       console.log(easyrtc.idToName(easyrtcid));
-      contact.name=easyrtc.idToName(easyrtcid);
-      contact.phone=easyrtcid;
+      contact.name = easyrtc.idToName(easyrtcid);
+      contact.phone = easyrtcid;
       this.contacts.push()
       this.contacts.push(contact);
     }
-}
+  }
 
   Ringtone(state) {
     if (state == "LOAD") {
@@ -341,15 +296,13 @@ export class CallPage {
         console.log("err", err)
       });
     } else if (state == "STOP") {
-      this.nativeAudio.stop('uniqueI1').then(() => {}, () => {});
+      this.nativeAudio.stop('uniqueI1').then(() => { }, () => { });
     }
   }
 
   SwitchCamera() {
     easyrtc.getVideoSourceList((list) => {
       var i;
-      //alert(JSON.stringify(this.localStream) + ', ' + JSON.stringify(list[i]))
-     // console.log(JSON.stringify(this.localStream) + ', ' + JSON.stringify(list[i]));
       if (this.currentCamera) {
         easyrtc.setVideoSource(list[0].deviceid);
         this.currentCamera = false;
@@ -360,5 +313,5 @@ export class CallPage {
       }
     });
   }
-  
+
 }
