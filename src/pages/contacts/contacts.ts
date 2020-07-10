@@ -1,9 +1,7 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ViewController, Platform } from 'ionic-angular';
-import { Storage } from '@ionic/storage';
+import { IonicPage, NavParams, ViewController, Platform } from 'ionic-angular';
 import { Contact } from '../../model/contact';
 
-import { ContactsProvider } from '../../providers/contacts/contacts'
 /**
  * Generated class for the ContactsPage page.
  *
@@ -29,9 +27,7 @@ export class ContactsPage {
   constructor(
     public platform: Platform,
     public params: NavParams,
-    public viewCtrl: ViewController,
-    private storage: Storage,
-    private contactProvider: ContactsProvider
+    public viewCtrl: ViewController
   ) {
    
      }

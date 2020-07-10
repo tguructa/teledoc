@@ -5,7 +5,8 @@ import { Storage } from '@ionic/storage';
 import { Platform } from 'ionic-angular';
 import { AlertController } from 'ionic-angular';
 import { Contact } from '../../model/contact';
-import { Base64 } from 'base64-string';
+import { ToastController } from 'ionic-angular';
+import * as Constants from '../../constants/constant';
 /**
  * Generated class for the CallPage page.
  *
@@ -39,7 +40,6 @@ export class CallPage {
   calleeName;
   RegistrationID = "";
   isRegistered: boolean = false;
-  enc = new Base64();
   AnswerCallAlert;
   occupants: any;
   contacts: Contact[] = [];
@@ -52,8 +52,9 @@ export class CallPage {
     public modalController: ModalController,
     private storage: Storage,
     public platform: Platform,
-    private alertCtrl: AlertController
-
+    private alertCtrl: AlertController,
+    private toastCtrl: ToastController
+   
   ) {
 
   }
@@ -64,6 +65,20 @@ export class CallPage {
       this.Ringtone("LOAD");
       this.RegisterUser();
     });
+  }
+
+  presentToast(message) {
+    let toast = this.toastCtrl.create({
+      message: message,
+      duration: 3000,
+      position: 'top'
+    });
+  
+    toast.onDidDismiss(() => {
+      console.log('Dismissed toast');
+    });
+  
+    toast.present();
   }
 
   CallAlert(alertMessage) {
@@ -110,12 +125,11 @@ export class CallPage {
 
   InitializeApiRTC(RegistrationID) {
     easyrtc.setUsername(RegistrationID);
-    easyrtc.setSocketUrl("https://www.telemd.xyz:8443");
+    easyrtc.setSocketUrl(Constants.API_ENDPOINT);
     easyrtc.setVideoDims(256, 144);
     easyrtc.enableDebug(false);
     easyrtc.enableDataChannels(true);
     easyrtc.setUseFreshIceEachPeerConnection(true);
-    // easyrtc.setRoomOccupantListener(this.LoadOccupants);
     this.InitializeControls();
     easyrtc.enableAudio(true);
     easyrtc.enableVideo(true);
@@ -193,7 +207,7 @@ export class CallPage {
 
       this.AnswerCallAlert = this.alertCtrl.create({
         title: 'Call',
-        subTitle: 'Incoming call from' + easyrtc.idToName(easyrtcid),
+        subTitle: 'Incoming call from ' + easyrtc.idToName(easyrtcid),
         buttons: [
           {
             text: 'Reject',
@@ -256,7 +270,7 @@ export class CallPage {
     var failureCB = function () { };
     var acceptedCB = (accepted, easyrtcid) => {
       if (!accepted) {
-        alert("CALL-REJECTEd: Sorry, your call to " + easyrtc.idToName(easyrtcid) + " was rejected");
+        this.presentToast("Your call to " + easyrtc.idToName(easyrtcid) + " was rejected") ;
         this.InitializeControls();
       }
     };
@@ -271,18 +285,7 @@ export class CallPage {
     this.Ringtone("STOP");
   }
 
-  LoadOccupants(roomName, occupants, isPrimary) {
-    for (var easyrtcid in occupants) {
-      let contact: Contact;
-      console.log(easyrtc.idToName(easyrtcid));
-      contact.name = easyrtc.idToName(easyrtcid);
-      contact.phone = easyrtcid;
-      this.contacts.push()
-      this.contacts.push(contact);
-    }
-  }
-
-  Ringtone(state) {
+   Ringtone(state) {
     if (state == "LOAD") {
       this.nativeAudio.preloadComplex('uniqueI1', 'assets/audio/tone.mp3', 1, 1, 0).then((succ) => {
         console.log("suu", succ)

@@ -10,8 +10,7 @@ import { IonicStorageModule } from '@ionic/storage';
 import { MyApp } from './app.component';
 import { HomeModule } from '../pages/home/home.module';
 import { AndroidPermissions } from '@ionic-native/android-permissions';
-import { ContactsProvider } from '../providers/contacts/contacts';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
+
 @NgModule({
   declarations: [
     MyApp
@@ -20,7 +19,6 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
     BrowserModule,
     IonicModule.forRoot(MyApp,{ preloadModules: true }),
     HomeModule,
-    HttpClientModule,
     IonicStorageModule.forRoot({
       name: '__f2fdb',
          driverOrder: ['indexeddb', 'sqlite', 'websql']
@@ -35,9 +33,7 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
     NativeAudio,
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler},
-    ContactsProvider,
-    HttpClientModule
+    {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })
 export class AppModule {}
