@@ -11,19 +11,19 @@
 - add android platform
    `ionic cordova platform add android`
 - run all the cordova plugin 
-   `ionic  cordova plugin add cordova-plugin-console`
-   `ionic cordova plugin add cordova-custom-config`
-   `ionic cordova plugin add cordova-plugin-device`
-   `ionic cordova plugin add cordova-plugin-media`
-   `ionic cordova plugin add android-camera-permission`
-   `ionic cordova plugin add cordova-plugin-android-permissions@0.10.0`
-   `ionic cordova plugin add cordova-plugin-ionic-webview@latest`
+  > `ionic  cordova plugin add cordova-plugin-console`
+  > `ionic cordova plugin add cordova-custom-config`
+  > `ionic cordova plugin add cordova-plugin-device`
+  > `ionic cordova plugin add cordova-plugin-media`
+  > `ionic cordova plugin add android-camera-permission`
+  > `ionic cordova plugin add cordova-plugin-android-permissions@0.10.0`
+  > `ionic cordova plugin add cordova-plugin-ionic-webview@latest`
 
-   `npm install --save @ionic/storage`
-   `ionic cordova plugin add cordova-sqlite-storage`
+  > `npm install --save @ionic/storage`
+  > `ionic cordova plugin add cordova-sqlite-storage`
    
-   `ionic cordova plugin add cordova-plugin-nativeaudio`
-   `npm install --save @ionic-native/native-audio@4`
+  > `ionic cordova plugin add cordova-plugin-nativeaudio`
+  > `npm install --save @ionic-native/native-audio@4`
 ### Please add the following preferances to `config.xml`
    `<preference name="android-minSdkVersion" value="22" />`
    `<preference name="android:targetSdkVersion" value="28" />`
