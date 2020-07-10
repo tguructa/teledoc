@@ -12,7 +12,7 @@
    `ionic cordova platform add android`
 - run all the cordova plugin 
 ```
-ionic  cordova plugin add cordova-plugin-console
+ionic cordova plugin add cordova-plugin-console
 ionic cordova plugin add cordova-custom-config
 ionic cordova plugin add cordova-plugin-device
 ionic cordova plugin add cordova-plugin-media
