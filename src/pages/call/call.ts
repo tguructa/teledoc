@@ -91,13 +91,7 @@ export class CallPage {
   }
 
   async openModal() {
-    this.contacts = [];
-    this.occupants = easyrtc.getRoomOccupantsAsArray("default");
-    for (let key of this.occupants) {
-      this.contact.name = easyrtc.idToName(key);
-      this.contact.phone = key;
-      this.contacts.push(this.contact);
-    }
+ 
     const contactModel = await this.modalController.create('ContactsPage', { contacts: this.contacts });
     contactModel.onDidDismiss(data => {
       if (data) {
@@ -126,7 +120,8 @@ export class CallPage {
   InitializeApiRTC(RegistrationID) {
     easyrtc.setUsername(RegistrationID);
     easyrtc.setSocketUrl(Constants.API_ENDPOINT);
-    easyrtc.setVideoDims(256, 144);
+   // easyrtc.setVideoDims(256, 144);
+   easyrtc.setVideoDims(1280,720);
     easyrtc.enableDebug(false);
     easyrtc.enableDataChannels(true);
     easyrtc.setUseFreshIceEachPeerConnection(true);
@@ -134,7 +129,7 @@ export class CallPage {
     easyrtc.enableAudio(true);
     easyrtc.enableVideo(true);
     this.AddEventListeners();
-    easyrtc.connect("easyrtc.audioVideo", (easyrtcid) => {
+    easyrtc.connect("telemd.teledoc", (easyrtcid) => {
       this.myCallId = easyrtc.idToName(easyrtc.cleanId(easyrtcid));;
 
       easyrtc.initMediaSource(
@@ -201,6 +196,16 @@ export class CallPage {
   }
 
   AddEventListeners() {
+
+    easyrtc.setRoomOccupantListener( (roomName, occupants, isPrimary) =>{
+      this.contacts = [];
+      for (var key in occupants) {
+        this.contact.name = easyrtc.idToName(key);
+        this.contact.phone = key;
+        this.contacts.push(this.contact);
+      }
+  }); 
+
     easyrtc.setAcceptChecker((easyrtcid, callback) => {
       console.log("answer call");
       this.InitializeControlsForIncomingCall();
