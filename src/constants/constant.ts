@@ -1,1 +1,1 @@
-export const API_ENDPOINT= 'https://www.telemd.xyz:8443';
+export const API_ENDPOINT= 'https://***.***.***:8443';
