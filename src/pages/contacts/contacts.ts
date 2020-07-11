@@ -22,7 +22,7 @@ export class ContactsPage {
 
   contacts: Contact[];
   contact: Contact;
-  show = true;  
+  show = false;  
 
   constructor(
     public platform: Platform,
@@ -33,9 +33,9 @@ export class ContactsPage {
      }
 
   ionViewDidLoad() {
-  //  this.getContacts();
+    this.show=true;
   this.contacts=this.params.get('contacts');
-    console.log(this.contacts);
+    this.show=false;
   }
   radioSelect(value) {
     console.log("radioSelect",value);
