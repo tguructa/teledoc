@@ -118,16 +118,25 @@ export class CallPage {
   }
 
   InitializeApiRTC(RegistrationID) {
+	easyrtc.enableAudio(true);
+    easyrtc.enableVideo(true);
+	
+	  	   if (navigator.userAgent.match(/android/i)) {
+  	var remote_filter= easyrtc.buildRemoteSdpFilter({audioSendCodec: 'ISAC/16000'});
+  	console.log(remote_filter);
+  	var local_filter= easyrtc.buildLocalSdpFilter({audioRecvCodec: 'opus/48000/2'});
+  	console.log(local_filter);
+  	easyrtc.setSdpFilters(local_filter,remote_filter);
+  }
+
     easyrtc.setUsername(RegistrationID);
     easyrtc.setSocketUrl(Constants.API_ENDPOINT);
-   // easyrtc.setVideoDims(256, 144);
-   easyrtc.setVideoDims(1280,720);
+   //easyrtc.setVideoDims(256, 144);
+    easyrtc.setVideoDims(1280,720);
     easyrtc.enableDebug(false);
     easyrtc.enableDataChannels(true);
     easyrtc.setUseFreshIceEachPeerConnection(true);
     this.InitializeControls();
-    easyrtc.enableAudio(true);
-    easyrtc.enableVideo(true);
     this.AddEventListeners();
     easyrtc.connect("telemd.teledoc", (easyrtcid) => {
       this.myCallId = easyrtc.idToName(easyrtc.cleanId(easyrtcid));;
