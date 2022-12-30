@@ -28,7 +28,7 @@
     "@ionic/storage": "^2.2.0",
     "@reactivex/rxjs": "^5.5.12",
     "android-camera-permission": "^1.0.0",
-    "base64-string": "^1.0.8",
+    "base64-string": "^1.1.2",
     "cordova-android": "^8.1.0",
     "cordova-custom-config": "^5.1.0",
     "cordova-plugin-android-permissions": "^0.10.0",
